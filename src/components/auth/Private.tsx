@@ -1,0 +1,63 @@
+import useHandleNavigate from "../../hooks/useHandleNavigate";
+import { useEffect } from "react";
+import useHandleAuth from "../../hooks/useHandleAuth";
+import DefaultLoad from "../../components/load/DefaultLoad";
+import { Navigate } from "react-router-dom";
+
+const Private = ({children}:{children:React.ReactElement}) => {
+
+  const {currentAuthContext,authQueryState} = useHandleAuth({verifyAuth:true,sendEmail:false});
+ const {onNavigate} = useHandleNavigate();
+//  const [isAllow,setIsAllow] = useState<boolean  | null>(null);
+
+//   useEffect(()=>{
+    
+//     (authQueryState.isLoading !== null
+//     &&
+//     !authQueryState.isLoading)
+//     &&
+//     currentAuthContext.isAuth !== null
+//     &&
+//     setIsAllow(currentAuthContext.isAuth)
+
+
+//   },[currentAuthContext.isAuth,authQueryState.isLoading])
+
+  useEffect(()=>{
+    currentAuthContext.isAuth !== null
+    &&
+    (()=>{
+      !currentAuthContext.isAuth
+    &&
+    onNavigate("/auth/login",{
+      replace:true
+    })
+      null
+    })()
+
+  },[currentAuthContext.isAuth])
+
+
+
+  return <>
+    {
+      !!authQueryState.isLoading
+      ?
+      <section className="loadAuthorizationSection">
+      <DefaultLoad
+      isLoading={!!authQueryState.isLoading}
+      />
+      </section>
+      : 
+      !!(currentAuthContext.isAuth)
+      && 
+      ((currentAuthContext.isChecked)
+      ? children
+      : "precisa checagem" 
+      )
+    }
+    
+  </>
+}
+
+export default Private
