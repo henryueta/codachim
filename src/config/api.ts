@@ -8,8 +8,8 @@ const api_endpoints = {
         checkout:api_base+"auth/checkout",
         logout:api_base+"auth/logout",
         forgot:api_base+"auth/forgot",
-        email_cooldown:api_base+"auth/email-cooldown"
-        // recovery:api_base+"auth/recovery"
+        email_cooldown:api_base+"auth/email-cooldown",
+        password_recovery:api_base+"auth/password-recovery"
     },
     // notification:{
     //     post:api_base+"notification/post",

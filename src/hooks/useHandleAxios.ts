@@ -139,8 +139,14 @@ const useHandleAxios = ()=>{
             )
         }
 
+        
+
         try{
             console.log(data.url)
+            setAxiosState({
+            type:"loading",
+            value:true
+            })
             response = axios.request({
                 url:data.url,
                 method:data.method,
@@ -154,17 +160,33 @@ const useHandleAxios = ()=>{
         }
         catch(error){
             console.log(error)
+            setAxiosState({
+                type:"loading",
+                value:false
+            })
         }
 
         return await response
         ?.then((result)=>{
             treatment_provider?.onThen(result)
+             setAxiosState({
+                type:"success",
+                value:true
+            })
         })
         .catch((error)=>{
             treatment_provider?.onCatch(error)
+            setAxiosState({
+                type:"error",
+                value:true
+            })
         })
         .finally(()=>{
             treatment_provider?.onFinally()
+            setAxiosState({
+                type:"loading",
+                value:false
+            })
         })
         
     }

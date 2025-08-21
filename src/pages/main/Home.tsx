@@ -142,9 +142,7 @@ import useHandleQuery from "../../hooks/useHandleQuery";
 // }
 
 const Home = () => {
-
   const {onNavigate} = useHandleNavigate();
-
   return (
     <div>
       <button

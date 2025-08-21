@@ -3,8 +3,9 @@ import { useEffect } from "react";
 import useHandleAuth from "../../hooks/useHandleAuth";
 import DefaultLoad from "../../components/load/DefaultLoad";
 import { Navigate } from "react-router-dom";
+import type { ChildrenProp } from "../../@types/children-type";
 
-const Private = ({children}:{children:React.ReactElement}) => {
+const Private = ({children}:ChildrenProp) => {
 
   const {currentAuthContext,authQueryState} = useHandleAuth({verifyAuth:true});
  const {onNavigate} = useHandleNavigate();
@@ -31,16 +32,14 @@ const Private = ({children}:{children:React.ReactElement}) => {
     currentAuthContext.isAuth !== null
     &&
     (()=>{
-      !currentAuthContext.isAuth
+    !currentAuthContext.isAuth
     &&
     onNavigate("/auth/login",{
       replace:true
     })
-      null
     })()
 
-  },[currentAuthContext.isAuth])
-
+  },[currentAuthContext.isAuth,authQueryState.isLoading])
 
 
   return <>
@@ -60,7 +59,6 @@ const Private = ({children}:{children:React.ReactElement}) => {
       : <Navigate to={"/checkout"}/> 
       )
     }
-    
   </>
 }
 

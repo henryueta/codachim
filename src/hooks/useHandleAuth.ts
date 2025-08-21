@@ -17,7 +17,6 @@ const useHandleAuth = ({verifyAuth}:{verifyAuth:boolean})=>{
         verifyAuth
         &&
         setAuthQueryState(axiosState)
-
     },[axiosState])
 
     const onGetToken = ()=>{

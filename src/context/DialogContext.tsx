@@ -10,7 +10,7 @@ const DialogContext = createContext({} as {
 
 
 
-const DialogProvider = ({children}:{children:React.ReactNode})=>{
+const DialogProvider = ({children})=>{
 
         const initialDialogStructureValue = {
             isOpen:false,
