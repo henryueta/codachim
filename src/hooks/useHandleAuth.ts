@@ -5,13 +5,12 @@ import useHandleAxios from "./useHandleAxios";
 import type { AxiosStateType, AxiosTreatmentType } from "../@types/axios-type";
 import useHandleNavigate from "./useHandleNavigate";
 
-const useHandleAuth = ({verifyAuth,sendEmail}:{verifyAuth:boolean,sendEmail:boolean})=>{
+const useHandleAuth = ({verifyAuth}:{verifyAuth:boolean})=>{
 
     const currentAuthContext = useContext(AuthContext);
     const {onRequest,axiosState,onCreateCancelToken,onTreatmentProvider} = useHandleAxios();
     const [authQueryState,setAuthQueryState] = useState<AxiosStateType>(axiosState);
     const {onNavigate} = useHandleNavigate();
-    const [emailForCheckout,setEmailForCheckout] = useState("");
 
     useEffect(()=>{
 
@@ -20,6 +19,32 @@ const useHandleAuth = ({verifyAuth,sendEmail}:{verifyAuth:boolean,sendEmail:bool
         setAuthQueryState(axiosState)
 
     },[axiosState])
+
+    const onGetToken = ()=>{
+        const token = localStorage.getItem("auth_token")
+        return token
+    }
+
+    const onEmailCooldown = (treatment?:AxiosTreatmentType)=>{
+
+        const treatmentProvider = onTreatmentProvider(treatment)
+
+        onRequest({
+            method:"get",
+            url:api_endpoints.auth.email_cooldown+"?token="+onGetToken(),
+            cancelToken:onCreateCancelToken()
+        },{
+            onThen(result) {
+                console.log(result)
+                treatmentProvider.onThen(result)
+            },
+            onCatch(error) {
+                console.log(error)
+                treatmentProvider.onCatch(error)
+            },
+        })
+
+    }
 
     const onLogout = ()=>{
 
@@ -42,40 +67,38 @@ const useHandleAuth = ({verifyAuth,sendEmail}:{verifyAuth:boolean,sendEmail:bool
       useEffect(()=>{
         verifyAuth
         &&
-        onCheckout("get");
+        onCheckout("get",false);
     },[])    
 
-      const onCheckout = (method:'get'|'post',code?:string,treatment?:AxiosTreatmentType)=>{
-            
+      const onCheckout = (method:'get'|'post',sendEmail:boolean,code?:string,treatment?:AxiosTreatmentType)=>{
+
             onRequest({
             method:method,
-            url:api_endpoints.auth.checkout+"?sendEmail="+sendEmail,
+            url:api_endpoints.auth.checkout+"?sendEmail="+sendEmail+"&token="+onGetToken(),
             cancelToken:onCreateCancelToken(),
             body:
-                method === 'post'
+                (method === 'post'
                 ? {code:code}
-                : {}
+                : {})
             },
             {
              onThen(result) {
-                const currentResult = result.response.data
-                method === 'get'
-                && (()=>{
+                console.log(result)
+                const currentResult = result.data.data;                
+                if(method === 'get'){
                     currentAuthContext.setIsAuth(true)
-                })()
-                    setEmailForCheckout(currentResult.email)
-                    currentAuthContext.setIsChecked(currentResult.is_checked)
-                    !!treatment?.onThen
-                    &&
-                    treatment?.onThen(result);
+                }
+                currentAuthContext.setIsChecked(currentResult.is_checked)
+                !!treatment?.onThen
+                &&
+                treatment?.onThen(result);
             },
              onCatch(error) {
                  console.log("checkout_error",error)
-                method === 'get'
-                &&
-                (()=>{
+                 console.log(currentAuthContext)
+                 if(method === 'get'){
                     currentAuthContext.setIsAuth(false)
-                })()
+                 }
                 treatment?.onCatch
                 &&
                 treatment.onCatch(error)
@@ -110,9 +133,9 @@ const useHandleAuth = ({verifyAuth,sendEmail}:{verifyAuth:boolean,sendEmail:bool
         currentAuthContext,
         onCheckout,
         onLogout,
+        onEmailCooldown,
         onForgot,
         authQueryState,
-        emailForCheckout
     }
 
 }

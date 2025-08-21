@@ -34,13 +34,13 @@ interface AxiosDataType {
 
 interface AxiosResponseType {
     message:string,
-    data:string,
+    data:any,
     status:string
 }
 
 interface AxiosErrorType {
     response:{
-        data:Omit<AxiosResponseType,"data"|"status">
+        data:Omit<AxiosResponseType,"data"|"status"> & Record<'data',any>
     }
 } 
 

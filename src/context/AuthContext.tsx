@@ -1,4 +1,5 @@
 import { createContext, useState, type Dispatch } from "react"
+import type { ChildrenProp } from "../@types/children-type";
 
 interface AuthProps {
 
@@ -10,7 +11,7 @@ interface AuthProps {
 
 const AuthContext = createContext({} as AuthProps);
 
-const AuthProvider = ({children}:{children:React.ReactNode}) => {
+const AuthProvider = ({children}:ChildrenProp) => {
 
     const [isAuth,setIsAuth] = useState<boolean | null>(null);
     const [isChecked,setIsChecked] = useState<boolean | null>(null);
